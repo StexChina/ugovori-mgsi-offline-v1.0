@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="sr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ugovori MGSI</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="screen active">
+    <div class="login-card">
+      <img src="assets/mgsi_logo.svg" class="logo" alt="MGSI" />
+      <h1>Ugovori MGSI</h1>
+      <p class="muted" id="loginSubtitle">Prijavite se za pristup</p>
+      <div class="form-row">
+        <label id="lblUsername" for="username">Korisničko ime</label>
+        <input id="username" type="text" autocomplete="username" placeholder="stefan"/>
+      </div>
+      <div class="form-row">
+        <label id="lblPassword" for="password">Lozinka</label>
+        <input id="password" type="password" autocomplete="current-password" placeholder="mgsi123"/>
+      </div>
+      <button class="btn primary" id="btnLogin">Prijavi se</button>
+      <div class="login-meta">
+        <button class="btn ghost" id="toggleThemeLogin">🌞/🌙</button>
+        <button class="btn ghost" id="toggleLangLogin">🇷🇸/🇬🇧</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Screen -->
+  <div id="app-screen" class="screen">
+    <header class="app-header">
+      <div class="left">
+        <img src="assets/mgsi_logo.svg" class="logo small" alt="MGSI" />
+        <img src="assets/flag_rs.svg" class="flag" alt="RS" />
+        <h2 class="title">Ugovori MGSI</h2>
+      </div>
+      <div class="right">
+        <button class="btn ghost" id="toggleTheme">🌞/🌙</button>
+        <button class="btn ghost" id="toggleLang">🇷🇸/🇬🇧</button>
+        <div class="user-chip"><span id="currentUser">stefan</span> | <a href="#" id="btnLogout">Odjava</a></div>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab active" data-tab="ugovori" id="tabUgovori">Ugovori</button>
+      <button class="tab" data-tab="sporazumi" id="tabSporazumi">Okvirni sporazumi</button>
+      <button class="tab" data-tab="narudzbenice" id="tabNarudzbenice">Narudžbenice</button>
+      <button class="tab" data-tab="fakture" id="tabFakture">Fakture</button>
+      <button class="tab" data-tab="archive" id="tabArhiva">Arhiva</button>
+      <button class="tab" data-tab="log" id="tabLog">Aktivnosti</button>
+      <button class="tab" data-tab="settings" id="tabSettings">Podešavanja</button>
+      <button class="tab" data-tab="about" id="tabAbout">O projektu</button>
+    </nav>
+
+    <main class="views">
+      <!-- Ugovori -->
+      <section class="view active" id="view-ugovori">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddUgovor">➕ <span data-i18n="addContract">Dodaj ugovor</span></button>
+          <input class="search" id="searchUgovori" placeholder="Pretraga…" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblUgovori">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Broj</th>
+                <th>Dobavljač</th>
+                <th>Tip</th>
+                <th>Metod</th>
+                <th>Vrednost</th>
+                <th>Potrošeno</th>
+                <th>Preostalo</th>
+                <th>Od–Do</th>
+                <th>Status</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Okvirni sporazumi -->
+      <section class="view" id="view-sporazumi">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddSporazum">➕ Dodaj okvirni sporazum</button>
+          <input class="search" id="searchSporazumi" placeholder="Pretraga…" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblSporazumi">
+            <thead>
+              <tr>
+                <th>#</th><th>Broj</th><th>Dobavljač</th><th>Vrednost</th><th>Od–Do</th><th>Status</th><th></th>
+              </tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Narudžbenice -->
+      <section class="view" id="view-narudzbenice">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddNarudzbenica">➕ Dodaj narudžbenicu</button>
+          <input class="search" id="searchNarudzbenice" placeholder="Pretraga…" />
+        </div>
+        <div class="notice">
+          Maksimalna vrednost narudžbenice: 1.200.000 RSD sa PDV (1.000.000 bez PDV). Dozvoljena 1 narudžbenica u 12 meseci po ugovoru.
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblNarudzbenice">
+            <thead>
+              <tr>
+                <th>#</th><th>Broj</th><th>Ugovor</th><th>Iznos sa PDV</th><th>Iznos bez PDV</th><th>Datum</th><th>Status</th><th></th>
+              </tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Fakture (osnova) -->
+      <section class="view" id="view-fakture">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddFaktura">➕ Dodaj fakturu</button>
+          <input class="search" id="searchFakture" placeholder="Pretraga…" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblFakture">
+            <thead>
+              <tr>
+                <th>#</th><th>Broj</th><th>Ugovor</th><th>Iznos</th><th>Datum</th><th>Status</th><th></th>
+              </tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Arhiva -->
+      <section class="view" id="view-archive">
+        <div class="toolbar">
+          <span class="muted">Ovo su zapisi koje si obrisao. Možeš ih vratiti ili trajno ukloniti.</span>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblArchive">
+            <thead>
+              <tr>
+                <th>#</th><th>Tip</th><th>Broj</th><th>Detalj</th><th>Obrisano</th><th></th>
+              </tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Log aktivnosti -->
+      <section class="view" id="view-log">
+        <div class="toolbar">
+          <button class="btn" id="btnExportLog">💾 Export log</button>
+          <button class="btn danger" id="btnClearLog">🧹 Očisti log</button>
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblLog">
+            <thead><tr><th>#</th><th>Vreme</th><th>Korisnik</th><th>Akcija</th><th>Detalji</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Podešavanja -->
+      <section class="view" id="view-settings">
+        <div class="card">
+          <h3>Šabloni</h3>
+          <div class="grid">
+            <div>
+              <label>Interni nalog (DOCX)</label>
+              <input type="file" id="tplNaloga" accept=".doc,.docx"/>
+            </div>
+            <div>
+              <label>Stanje ugovora (XLSX)</label>
+              <input type="file" id="tplStanje" accept=".xls,.xlsx"/>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Bekap podataka</h3>
+          <div class="grid">
+            <button class="btn" id="btnExportData">💾 Export podataka (JSON)</button>
+            <label class="btn">
+              📥 Import podataka (JSON)
+              <input type="file" id="btnImportData" accept=".json" hidden />
+            </label>
+          </div>
+        </div>
+        <div class="card">
+          <h3>Pismo za izvoz dokumenata</h3>
+          <div class="grid">
+            <label><input type="radio" name="scriptChoice" value="cyr" checked> Ћирилица (службено)</label>
+            <label><input type="radio" name="scriptChoice" value="lat"> Latinica (interno)</label>
+            <button class="btn" id="btnSaveScript">Sačuvaj izbor</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- O projektu -->
+      <section class="view" id="view-about">
+        <div class="card">
+          <h3>O projektu</h3>
+          <p>„Ugovori MGSI“ je offline aplikacija za internu evidenciju ugovora, okvirnih sporazuma i narudžbenica u MGSI.</p>
+          <ul>
+            <li>Verzija: v1.0 (08.10.2025)</li>
+            <li>Autor: Stefan Radošević (MGSI) & GPT-5</li>
+            <li>Kontakt: intern</li>
+          </ul>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal (Add/Edit forms & Confirm) -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal</h3>
+        <button class="btn ghost" id="modalClose">✖</button>
+      </div>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-footer" id="modalFooter"></div>
+    </div>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
