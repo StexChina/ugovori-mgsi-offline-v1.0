@@ -7,6 +7,8 @@
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="js-error" style="display:none;position:fixed;top:0;left:0;right:0;background:#fee2e2;color:#991b1b;padding:8px 12px;z-index:20000;border-bottom:1px solid #fecaca;font-weight:700"></div>
+
   <!-- Login Screen -->
   <div id="login-screen" class="screen active">
     <div class="login-card">
@@ -31,25 +33,27 @@
 
   <!-- App Screen -->
   <div id="app-screen" class="screen">
-    <header class="app-header">
+    <header class="app-header" role="banner">
       <div class="left">
         <img src="assets/mgsi_logo.svg" class="logo small" alt="MGSI" />
-        <img src="assets/flag_rs.svg" class="flag" alt="RS" />
+        <img src="assets/flag_rs.svg" class="flag" alt="Grb RS" />
         <h2 class="title">Ugovori MGSI</h2>
       </div>
       <div class="right">
-        <button class="btn ghost" id="toggleTheme">🌞/🌙</button>
-        <button class="btn ghost" id="toggleLang">🇷🇸/🇬🇧</button>
+        <button class="btn ghost" id="toggleTheme" title="Tema">🌞/🌙</button>
+        <button class="btn ghost" id="toggleLang" title="Jezik">🇷🇸/🇬🇧</button>
         <div class="user-chip"><span id="currentUser">stefan</span> | <a href="#" id="btnLogout">Odjava</a></div>
       </div>
     </header>
 
-    <nav class="tabs">
+    <!-- Top Tabs (swapped Narudžbenice <-> Okvirni sporazumi) -->
+    <nav class="tabs" role="navigation" aria-label="Glavna navigacija">
       <button class="tab active" data-tab="ugovori" id="tabUgovori">Ugovori</button>
-      <button class="tab" data-tab="sporazumi" id="tabSporazumi">Okvirni sporazumi</button>
       <button class="tab" data-tab="narudzbenice" id="tabNarudzbenice">Narudžbenice</button>
+      <button class="tab" data-tab="sporazumi" id="tabSporazumi">Okvirni sporazumi</button>
       <button class="tab" data-tab="fakture" id="tabFakture">Fakture</button>
       <button class="tab" data-tab="archive" id="tabArhiva">Arhiva</button>
+      <button class="tab" data-tab="komitenti" id="tabKomitenti">Komitenti</button>
       <button class="tab" data-tab="log" id="tabLog">Aktivnosti</button>
       <button class="tab" data-tab="settings" id="tabSettings">Podešavanja</button>
       <button class="tab" data-tab="about" id="tabAbout">O projektu</button>
@@ -59,52 +63,38 @@
       <!-- Ugovori -->
       <section class="view active" id="view-ugovori">
         <div class="toolbar">
-          <button class="btn primary" id="btnAddUgovor">➕ <span data-i18n="addContract">Dodaj ugovor</span></button>
+          <button class="btn primary" id="btnAddUgovor" type="button" onclick="try{openUgovorForm()}catch(e){alert('Greška: '+e.message)}" onclick="window.__onAdd && window.__onAdd('ugovor')">➕ <span data-i18n="addContract">Dodaj ugovor</span></button>
           <input class="search" id="searchUgovori" placeholder="Pretraga…" />
+          <div class="spacer"></div>
+          <label class="inline">Gustina:
+            <select id="selDensityUgovori">
+              <option value="comfortable">Komforan</option>
+              <option value="compact">Kompaktan</option>
+            </select>
+          </label>
+          <label class="inline">Po strani:
+            <select id="selPageUgovori">
+              <option>10</option>
+              <option selected>25</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </label>
+          <button class="btn" id="btnColsUgovori">Kolone</button>
         </div>
         <div class="table-wrap">
           <table class="data-table" id="tblUgovori">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Broj</th>
-                <th>Dobavljač</th>
-                <th>Tip</th>
-                <th>Metod</th>
-                <th>Vrednost</th>
-                <th>Potrošeno</th>
-                <th>Preostalo</th>
-                <th>Od–Do</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody></tbody>
+            <thead><tr id="headUgovori"></tr></thead>
+            <tbody id="bodyUgovori"></tbody>
           </table>
         </div>
+        <div class="table-controls" id="pgUgovori"></div>
       </section>
 
-      <!-- Okvirni sporazumi -->
-      <section class="view" id="view-sporazumi">
-        <div class="toolbar">
-          <button class="btn primary" id="btnAddSporazum">➕ Dodaj okvirni sporazum</button>
-          <input class="search" id="searchSporazumi" placeholder="Pretraga…" />
-        </div>
-        <div class="table-wrap">
-          <table class="data-table" id="tblSporazumi">
-            <thead>
-              <tr>
-                <th>#</th><th>Broj</th><th>Dobavljač</th><th>Vrednost</th><th>Od–Do</th><th>Status</th><th></th>
-              </tr>
-            </thead><tbody></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Narudžbenice -->
+      <!-- Narudžbenice (moved before Sporazumi) -->
       <section class="view" id="view-narudzbenice">
         <div class="toolbar">
-          <button class="btn primary" id="btnAddNarudzbenica">➕ Dodaj narudžbenicu</button>
+          <button class="btn primary" id="btnAddNarudzbenica" type="button" onclick="try{openNarudzbenicaForm()}catch(e){alert('Greška: '+e.message)}" onclick="window.__onAdd && window.__onAdd('narudzbenica')">➕ Dodaj narudžbenicu</button>
           <input class="search" id="searchNarudzbenice" placeholder="Pretraga…" />
         </div>
         <div class="notice">
@@ -121,10 +111,27 @@
         </div>
       </section>
 
-      <!-- Fakture (osnova) -->
+      <!-- Okvirni sporazumi (now after Narudžbenice) -->
+      <section class="view" id="view-sporazumi">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddSporazum" type="button" onclick="try{openSporazumForm()}catch(e){alert('Greška: '+e.message)}" onclick="window.__onAdd && window.__onAdd('sporazum')">➕ Dodaj okvirni sporazum</button>
+          <input class="search" id="searchSporazumi" placeholder="Pretraga…" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblSporazumi">
+            <thead>
+              <tr>
+                <th>#</th><th>Broj</th><th>Dobavljač</th><th>Vrednost</th><th>Od–Do</th><th>Status</th><th></th>
+              </tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Fakture -->
       <section class="view" id="view-fakture">
         <div class="toolbar">
-          <button class="btn primary" id="btnAddFaktura">➕ Dodaj fakturu</button>
+          <button class="btn primary" id="btnAddFaktura" type="button" onclick="try{openFakturaForm()}catch(e){alert('Greška: '+e.message)}" onclick="window.__onAdd && window.__onAdd('faktura')">➕ Dodaj fakturu</button>
           <input class="search" id="searchFakture" placeholder="Pretraga…" />
         </div>
         <div class="table-wrap">
@@ -140,21 +147,30 @@
 
       <!-- Arhiva -->
       <section class="view" id="view-archive">
-        <div class="toolbar">
-          <span class="muted">Ovo su zapisi koje si obrisao. Možeš ih vratiti ili trajno ukloniti.</span>
-        </div>
+        <div class="toolbar"><span class="muted">Obrisane stavke (može vraćanje ili trajno brisanje).</span></div>
         <div class="table-wrap">
           <table class="data-table" id="tblArchive">
             <thead>
-              <tr>
-                <th>#</th><th>Tip</th><th>Broj</th><th>Detalj</th><th>Obrisano</th><th></th>
-              </tr>
+              <tr><th>#</th><th>Tip</th><th>Broj</th><th>Detalj</th><th>Obrisano</th><th></th></tr>
             </thead><tbody></tbody>
           </table>
         </div>
       </section>
 
-      <!-- Log aktivnosti -->
+      <section class="view" id="view-komitenti">
+        <div class="toolbar">
+          <button class="btn primary" id="btnAddKomitent" type="button" onclick="try{openKomitentForm()}catch(e){alert('Greška: '+e.message)}">➕ Dodaj komitenta</button>
+          <input class="search" id="searchKomitenti" placeholder="Pretraga…" />
+        </div>
+        <div class="table-wrap">
+          <table class="data-table" id="tblKomitenti">
+            <thead>
+              <tr><th>#</th><th>Naziv</th><th>PIB</th><th>Kontakt</th><th>Napomena</th><th></th></tr>
+            </thead><tbody></tbody>
+          </table>
+        </div>
+      </section>
+
       <section class="view" id="view-log">
         <div class="toolbar">
           <button class="btn" id="btnExportLog">💾 Export log</button>
@@ -168,31 +184,45 @@
         </div>
       </section>
 
-      <!-- Podešavanja -->
       <section class="view" id="view-settings">
         <div class="card">
           <h3>Šabloni</h3>
           <div class="grid">
-            <div>
-              <label>Interni nalog (DOCX)</label>
-              <input type="file" id="tplNaloga" accept=".doc,.docx"/>
-            </div>
-            <div>
-              <label>Stanje ugovora (XLSX)</label>
-              <input type="file" id="tplStanje" accept=".xls,.xlsx"/>
-            </div>
+            <div><label>Interni nalog (DOCX)</label><input type="file" id="tplNaloga" accept=".doc,.docx"/></div>
+            <div><label>Stanje ugovora (XLSX)</label><input type="file" id="tplStanje" accept=".xls,.xlsx"/></div>
           </div>
         </div>
         <div class="card">
           <h3>Bekap podataka</h3>
           <div class="grid">
             <button class="btn" id="btnExportData">💾 Export podataka (JSON)</button>
-            <label class="btn">
-              📥 Import podataka (JSON)
+            <label class="btn">📥 Import podataka (JSON)
               <input type="file" id="btnImportData" accept=".json" hidden />
             </label>
           </div>
         </div>
+        
+        <div class="card">
+          <h3>Kategorije ugovora</h3>
+          <div class="grid">
+            <div style="flex:2">
+              <label>Dodaj novu kategoriju (npr. „Oprema“, „Prva pomoć“)</label>
+              <input type="text" id="inpNewCat" placeholder="Naziv kategorije"/>
+            </div>
+            <div style="display:flex; align-items:end; gap:10px">
+              <button class="btn" id="btnAddCat">Dodaj kategoriju</button>
+              <button class="btn" id="btnPinCats">Osvježi tabove</button>
+            </div>
+          </div>
+          <p class="muted">Kategorije utiču na filtere u „Ugovori“. Možete ih „prikvačiti“ kao tabove iznad.</p>
+          <div class="table-wrap" style="margin-top:8px">
+            <table class="data-table" id="tblCats">
+              <thead><tr><th>#</th><th>Kategorija</th><th>Prikvačena kao tab</th><th></th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="card">
           <h3>Pismo za izvoz dokumenata</h3>
           <div class="grid">
@@ -201,35 +231,61 @@
             <button class="btn" id="btnSaveScript">Sačuvaj izbor</button>
           </div>
         </div>
-      </section>
+        <div class="card">
+          <h3>Navigacija na mobilnom</h3>
+          <div class="grid">
+            <label><input type="radio" name="navStyle" value="top" checked> Gore (tabovi)</label>
+            <label><input type="radio" name="navStyle" value="bottom"> Dole (bottom nav)</label>
+            <button class="btn" id="btnSaveNavStyle">Sačuvaj</button>
+          </div>
+          <p class="muted">Na desktopu su uvek gore tabovi. Na mobilnom možeš da biraš.</p>
+        </div>
+      
+        <div class="card">
+          <h3>Logo zaglavlja</h3>
+          <div class="grid">
+            <div>
+              <label>Učitaj prilagođeni logo (PNG/SVG/JPG)</label>
+              <input type="file" id="uploadLogo" accept=".png,.svg,.jpg,.jpeg"/>
+            </div>
+            <div style="display:flex; align-items:center; gap:10px">
+              <button class="btn" id="btnResetLogo">Vrati podrazumevani</button>
+              <span class="muted">Logo se čuva lokalno (offline) i ne napušta računar.</span>
+            </div>
+          </div>
+        </div>
 
-      <!-- O projektu -->
       <section class="view" id="view-about">
         <div class="card">
           <h3>O projektu</h3>
           <p>„Ugovori MGSI“ je offline aplikacija za internu evidenciju ugovora, okvirnih sporazuma i narudžbenica u MGSI.</p>
           <ul>
-            <li>Verzija: v1.0.1 (08.10.2025)</li>
+            <li>Verzija: v1.2.1 (08.10.2025)</li>
             <li>Autor: Stefan Radošević (MGSI) & GPT-5</li>
             <li>Kontakt: intern</li>
           </ul>
         </div>
       </section>
     </main>
+
+    <!-- Bottom Nav (swapped order too) -->
+    <nav class="bottom-nav" role="navigation" aria-label="Mobilna navigacija">
+      <button data-tab="ugovori"><span class="ico">📄</span><span>Ugovori</span></button>
+      <button data-tab="narudzbenice"><span class="ico">🧾</span><span>Narudžb.</span></button>
+      <button data-tab="sporazumi"><span class="ico">📑</span><span>Sporazumi</span></button>
+      <button data-tab="fakture"><span class="ico">💼</span><span>Fakture</span></button>
+      <button data-tab="settings"><span class="ico">⚙️</span><span>Podeš.</span></button>
+    </nav>
   </div>
 
-  <!-- Modal -->
-  <div id="modal" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 id="modalTitle">Modal</h3>
-        <button class="btn ghost" id="modalClose">✖</button>
-      </div>
-      <div class="modal-body" id="modalBody"></div>
-      <div class="modal-footer" id="modalFooter"></div>
-    </div>
-  </div>
-
-<script src="script.js"></script>
+  <script src="script.js"></script>
+  <script>
+    window.addEventListener('error', function(e){
+      var box=document.getElementById('js-error');
+      if(!box) return;
+      box.style.display='block';
+      box.textContent='Greška u skripti: ' + (e && e.message ? e.message : 'nepoznato');
+    });
+  </script>
 </body>
 </html>
