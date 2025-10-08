@@ -1,5 +1,5 @@
-// Ugovori MGSI — v1.0 (offline)
-/* Features:
+// Ugovori MGSI — v1.0.1 (offline, responsive)
+/* Features identical to v1.0 + responsive tweaks:
  - Login (offline)
  - Light/Dark theme toggle
  - SR/EN language toggle
@@ -8,6 +8,7 @@
  - Soft delete to Archive (restore / permanent)
  - Activity Log with export/clear
  - Export/Import all data (JSON)
+ - Responsive: dynamic sticky offset for tabs, mobile-friendly sizes
 */
 
 // ------- State & Storage -------
@@ -84,17 +85,13 @@ const i18n = {
     create: "Create",
   }
 };
-
 function t(k){ return (i18n[state.lang] && i18n[state.lang][k]) || i18n['sr'][k] || k; }
-
 function applyLang(){
   document.querySelector('#login-screen h1').textContent = t('loginTitle');
   document.getElementById('loginSubtitle').textContent = t('loginSubtitle');
   document.getElementById('lblUsername').textContent = t('username');
   document.getElementById('lblPassword').textContent = t('password');
   document.getElementById('btnLogin').textContent = t('signIn');
-
-  // Tabs and buttons can be static Serbian for v1.0; core CTA translated
   document.querySelectorAll('[data-i18n="addContract"]').forEach(n=>n.textContent = t('addContract'));
 }
 applyLang();
@@ -120,6 +117,7 @@ function doLogin(){
     document.getElementById('currentUser').textContent = u;
     document.getElementById('login-screen').classList.remove('active');
     document.getElementById('app-screen').classList.add('screen','active');
+    updateStickyOffsets();
     renderAll();
   }else{
     alert("Pogrešni podaci. Pokušajte: stefan / mgsi123");
@@ -136,7 +134,7 @@ document.getElementById('btnLogout').addEventListener('click', (e)=>{
 });
 
 // ------- Theme & Lang toggles in app -------
-document.getElementById('toggleTheme').addEventListener('click', ()=> setTheme(state.theme === 'light' ? 'dark' : 'light'));
+document.getElementById('toggleTheme').addEventListener('click', ()=> { setTheme(state.theme === 'light' ? 'dark' : 'light'); updateStickyOffsets(); });
 document.getElementById('toggleLang').addEventListener('click', ()=> {
   state.lang = (state.lang === 'sr' ? 'en' : 'sr');
   localStorage.setItem(STORAGE_KEYS.lang, state.lang);
@@ -151,6 +149,7 @@ document.querySelectorAll('.tab').forEach(btn=>{
     const id = btn.dataset.tab;
     document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
     document.getElementById('view-'+id).classList.add('active');
+    updateStickyOffsets();
     renderAll();
   });
 });
@@ -602,7 +601,7 @@ document.getElementById('btnSaveScript').addEventListener('click', ()=>{
   alert("Sačuvano.");
 });
 
-// Templates (store just names as placeholders in v1.0)
+// Templates (store just names as placeholders in v1.0.1)
 document.getElementById('tplNaloga').addEventListener('change', async (e)=>{
   const f = e.target.files[0]; if(!f) return;
   state.templates.nalog = { name: f.name, at: new Date().toISOString() };
@@ -626,6 +625,15 @@ function downloadJSON(obj, filename){
   URL.revokeObjectURL(url);
 }
 
+// ------- Responsive: dynamic sticky offset for tabs -------
+function updateStickyOffsets(){
+  const header = document.querySelector('.app-header');
+  const hh = header ? header.offsetHeight : 58;
+  document.documentElement.style.setProperty('--tabs-top', hh + 'px');
+}
+window.addEventListener('resize', updateStickyOffsets);
+window.addEventListener('orientationchange', updateStickyOffsets);
+
 // ------- Initial Rendering -------
 function renderAll(){
   renderUgovori();
@@ -636,12 +644,12 @@ function renderAll(){
   renderLog();
 }
 
-// Show login or app on load
 (function init(){
   if(state.user){
     document.getElementById('currentUser').textContent = state.user.username;
     document.getElementById('app-screen').classList.add('screen','active');
     document.getElementById('login-screen').classList.remove('active');
+    updateStickyOffsets();
     renderAll();
   } else {
     document.getElementById('login-screen').classList.add('active');

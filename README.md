@@ -1,21 +1,15 @@
-# Ugovori MGSI (v1.0, offline)
+# Ugovori MGSI (v1.0.1, offline, responsive)
 
 Aplikacija za internu evidenciju **Ugovora, Okvirnih sporazuma i Narudžbenica** sa:
 - 🌓 Light/Dark tema (pamti izbor)
 - 🇷🇸/🇬🇧 SR/EN interfejs (pamti izbor)
 - 🗂️ Arhiva (soft delete + restore)
 - 📝 Log aktivnosti
-- 🔐 Login (offline, LocalStorage) — default korisnik: **stefan / mgsi123**
+- 🔐 Login (offline, LocalStorage) — default: **stefan / mgsi123**
 - 💾 Export/Import podataka (JSON)
-- 🖨️ Izbor pisma pri izvozu dokumenata: **Ćirilica/Latinica** (placeholder u v1.0)
+- 🖨️ Izbor pisma pri izvozu: **Ćirilica/Latinica** (placeholder u v1.0.1)
 - 📴 Potpuno **offline** (LocalStorage)
+- 📱 **Responsive UI** — radi i na telefonu i na računaru (sticky header/tabs, horizontal scroll tabova, veći tap targeti, modal full-screen na mobilnom).
 
 ## Pokretanje
 Otvorite `index.html` duplim klikom (nije potreban server).
-
-## Napomene
-- Svi podaci se čuvaju u LocalStorage vašeg pregledača. Napravite **Export** (JSON) kao bekap.
-- Placeholder-i za Word/Excel šablone nalaze se u `templates/` — u v1.0 se samo uvoze/imenjuju.
-- Generisanje PDF/Word sa izborom pisma planirano je za v1.1 (stub je prisutan).
-
-Autor: Stefan & GPT-5 — 2025-10-08
